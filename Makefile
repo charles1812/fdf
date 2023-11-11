@@ -13,6 +13,7 @@ MLX = $(MLX_DIR)/libmlx.a
 #compile all ft at once and put ion a library
 $(NAME):
 	make all -C libft
+	make all -C $(MLX_DIR)
 	$(COMPILE) $(SRC) $(MLX) -g3 -lXext -lX11 -lm -o $(NAME)
 #	$(COMPILE) $(CFLAG) -c $(SRC)
 #	ar rcs $(NAME) *.o
@@ -24,6 +25,7 @@ all:${NAME}
 clean:
 	rm -f ${OBJ}
 	make clean -C libft
+	make clean -C $(MLX_DIR)
 
 #clear all .o file
 fclean: clean
