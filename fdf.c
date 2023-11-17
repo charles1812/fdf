@@ -1,51 +1,23 @@
 #include "fdf.h"
 
-int     process_keypress(int keysym, void *mlx)
-{
-    if(keysym == XK_Escape)
-        mlx_loop_end(mlx);
-    else if (keysym == XK_k)
-        printf("salut\n");
-    return (0);
-}
 
+
+void	show_map(t_data *data)
+{
+	mlx_clear_window(data->mlx, data->mlx_win);
+	data->img = mlx_new_image(data->mlx, 1000, 800);
+	data->data.img = mlx_get_data_addr(data->img, &data->data.pixel,
+			&data->data.line, &data->data.endian);
+	draw_background(data, 0x181C26);
+	tracing(data);
+	mlx_put_image_to_window(data->mlx, data->mlx_win, data->img, 0, 0);
+	pannel(data);
+}
 
 int     process_structure(void *mlx)
 {
     mlx_loop_end(mlx);
     return (0);
-}
-
-int     process_mouse(int keysym, void *mlx)
-{
-    if (keysym == Button1)
-        printf("left click\n");
-    else if (keysym == Button2)
-        printf("scroll click\n");
-    else if (keysym == Button3)
-        printf("right click\n");
-    else if (keysym == Button4)
-        printf("up scroll\n");
-    else if (keysym == Button5)
-        printf("down scroll\n");
-    return (0);
-}
-
-void    ft_rettangolo(void *mlx, void *mlx_win, int min_x, int min_y)
-{
-    int x = 0;
-    int y = 0;
-
-    while (y < 100)
-    {
-        x = 0;
-        while(x < 200)
-        {
-            mlx_pixel_put(mlx, mlx_win, min_x + x, min_y + y, 0xff5733);
-            x++;
-        }
-        y++;
-    }
 }
 
 int     main_loop(t_data *data)
@@ -65,14 +37,21 @@ int     main_loop(t_data *data)
     return (0);
 }
 
-
-int     main(void)
+int     main(int argc, char **argv)
 {
     t_data *data;
 
     data = ft_calloc(1, sizeof(*data));
     data->mlx = mlx_init();
+	data->fd = open(data->ag[1], O_RDONLY, 0777);
+    if (data->fd == -1)
+		exit(-1);
+    readfile(data);
+	close(data->fd);
+
     data->mlx_win = mlx_new_window(data->mlx, 1000, 500, "Hello world!");
+    data->zoom = ft_max_zoom(100 / data->width, 2);
+    show_map(data);
 
     mlx_hook(data->mlx_win, KeyPress, KeyPressMask, process_keypress, data->mlx);
     mlx_hook(data->mlx_win, DestroyNotify, StructureNotifyMask, process_structure, data->mlx);
@@ -85,4 +64,5 @@ int     main(void)
     mlx_destroy_window(data->mlx, data->mlx_win);
     mlx_destroy_display(data->mlx);
     free(data->mlx);
+    return(0);
 }

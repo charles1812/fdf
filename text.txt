@@ -1,0 +1,3 @@
+mlx_init :
+return  a pointer to a structure to talk to grafic softwer; so the window himself like a process.
+
