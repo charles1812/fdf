@@ -1,6 +1,13 @@
 #include "fdf.h"
 
-void	projection(float *x, float *y, int *z, t_fdf *tab)
+int     ft_max_zoom(int one, int two)
+{
+    if(one > two)
+        return(one);
+    return(two);
+}
+
+void	projection(float *x, float *y, int *z, t_data *data)
 {
 	int	x_tmp;
 	int	y_tmp;
@@ -14,6 +21,16 @@ void	projection(float *x, float *y, int *z, t_fdf *tab)
 	x_tmp = *x;
 	*x = (*x - *y) * cos(0.8);
 	*y = (*x + *y) * sin(0.8) - *z;
+}
+
+void	put_pxl(t_data *data, int x, int y, int color)
+{
+	int		i;
+
+	i = (x * data->data.pixel / 8) + (y * data->data.line);
+	data->data.img[i] = color;
+	data->data.img[++i] = color >> 8;
+	data->data.img[++i] = color >> 16;
 }
 
 void	trace_line(float x0, float y0, t_data *data)
@@ -56,12 +73,17 @@ void	tracing(t_data *data)
 		while (j < data->width)
 		{
 			if (j < data->width - 1)
-				data->x1 += 1;
+			{
+				data->x = j + 1;
+				data->y = i;
+				trace_line(j, i, data);
+			}
 			if (i < data->height - 1)
-				data->y1 += 1;
-			data->y1 += i;
-			data->x1 += j;
-			trace_line(j, i, data);
+			{
+				data->x = j;
+				data->y = i + 1;
+				trace_line(j, i, data);
+			}
 			j++;
 		}
 		i++;
